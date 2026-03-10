@@ -1,0 +1,132 @@
+                                                      Instructions for downloading and installing Klipper on a Creality Ender 3 Pro
+English
+Step 1: Preparing the laptop and installing KIAUH
+Connect
+Commands:
+sudo apt update && sudo apt upgrade
+sudo apt install git python3-pip python3-venv build-essential –y
+The KIAUH script will help automatically install Klipper
+cd ~ && git clone https://github.com/dw-0/kiauh.git
+Step 2: Installing Klipper and the web interface
+Launch the installer menu and select the required components:
+Command:
+./kiauh/kiauh.sh
+1. Press 1 (Install)
+2. Install the following components one by one (press the appropriate number and follow the prompts):
+• Klipper (select the Python 3.x version)
+• Moonraker (this is an API bridge required for the web interface)
+• Fluidd (or Mainsail) is a beautiful web interface that lets you control your printer from your phone or computer.
+Step 3: Flashing the Ender 3 Pro board
+Now you need to "explain" to the stock board how it will work with Klipper.
+1. Connect your laptop to the printer via a USB cable.
+2. Find out the name of your board. If your stock printer (without upgrades) has either Crealiti v4.2.2 or v4.2.7.
+3. Build the firmware in the terminal:
+cd ~/klipper
+make menuconfig
+In the window that opens, select the desired parameters. Here's an example for a standard Ender 3 Pro board (version 4.2.2)
+• Microcontroller Architecture: STM32
+• Processor model: STM32F103
+• Bootloader offset: 28KiB bootloader
+• Communication interface: USB (on PA11/PA12)
+4. Build and flash.
+• Press Q, then Y to save the configuration.
+• Run the compile: make -j4
+• After a successful build, the klipper.bin file will appear in the ~/klipper/out folder. Copy it to your computer.
+
+5. Upload the firmware to the printer:
+• Format the microSD card to FAT32
+• Rename the klipper.bin file to firmware.bin
+• Insert the card into the turned-off printer and turn it on. The firmware will install in a few seconds.
+
+Step 4: Creating a configuration (printer.cfg)
+After flashing Klipper, you need to find your printer. Determine how it connected to the laptop:
+Command:
+ls /dev/serial/by-id/*
+You'll see something like /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 Copy this line; you'll need it in the config file.
+Now let's create the config file itself:
+1. Open the Fluidd web interface, accessible at http://laptop-ip
+2. Go to the "Machine" section
+3. There will be an empty printer.cfg file. You need to fill it in with the correct parameters.
+4. Best practice: Don't write everything from scratch. Use a ready-made template from the official Klipper repository:
+ls ~/klipper/config/ | grep -i ender
+In the output, find the file:
+Generic-creality-ender3-pro.cfg. Copy the template.
+
+5. Adapt the template:
+• Paste the copied text into printer.cfg in the web interface.
+• Find the [mcu] section and replace the serial: values ​​with the same string from /dev/serial/by-id/… that you saved.
+• Review the other settings (motor steps, axis direction, table, etc.); they are usually suitable for the stock printer.
+6. Click "Save & Restart." If everything is correct, the errors will disappear, and you will be able to control the printer via the browser.
+Step 5: First Launch and Calibration.
+1. Preheat the nozzle to 200 degrees Celsius and the bed to 60 degrees Celsius.
+2. Run PID calibration commands for the bed and extruder (buttons are available in the interface).
+3. Adjust the z-offset (using a piece of paper).
+4. Create a roughness map.
+Russian
+Инструкция по скачиванию и установке Klipper на Creality Ender 3 Pro
+Этап 1: Подготовка ноутбука и установка KIAUH
+Одключите 
+Команды:
+	sudo apt update && sudo apt  upgrade
+	sudo apt install git python3-pip python3-venv build-essential – y
+скрипт KIAUH поможет автоматически установить Kliper 
+cd ~ && git clone https://github.com/dw-0/kiauh.git
+Этап 2:  Установка Klipper и веб-интерфейса
+	Запустите меню установщика и выберите нужные компоненты:
+Команда:
+	./kiauh/kiauh.sh
+1.	Нажмите 1 (Install)
+2.	По очереди установите (нажимая соответствующую цифру и следуя подсказкам)
+•	Klipper (выберите вариант с Python 3.x)
+•	Moonraker (это API-мост, необходимый для работы веб-интерфейса)
+•	Fluidd (или Mainsail) – это красивый веб-интерфейс, через который вы будете управлять принтером с телефона или компьютера.
+ Этап 3:    Прошивка платы Ender 3 pro
+	Теперь нужно “объяснить” штатной плате как она будет работать с Klipper.
+1.	Подключите ноутбук к принтеру через USB-кабель.
+2.	Узнайте название вашей платы если штатный принтер (без улучшений) там стоит либо Crealiti  v4.2.2 или v4.2.7
+3.	Соберите прошивку в терминале выполни:
+cd ~/klipper
+make menuconfig
+В открывшемся окне нужно выбрать нужные параметры. Вот пример для стандартной платы Ender 3 Pro (версия 4.2.2)
+•	Микроконтроллер (Micro-controller Architecture): STM32
+•	Модель процессора (Processor model): STM32F103
+•	Загрузчик (Bootloader offset): 28KiB bootloader
+•	Интерфейс связи (Communication interface): USB (on PA11/PA12)
+4.	Соберите и прошейте.
+•	Нажмите Q, а затем Y для сохранения конфигурации.
+•	Запустите компиляцию: make -j4
+•	После успешной сборки в папке  ~/klipper/out появится файл klipper.bin. Скопируй его на компьютер.
+5.	Загрузите прошивку на принтер:
+•	Отформатируйте micro-SD карту в FAT32
+•	Переименуйте файл klipper.bin в firmware.bin
+•	Вставьте карту в выключенный принтер и включите его. Через пару секунд прошивка установится.
+
+Этап 4:  Создание конфигурации (printer.cfg)
+	После прошивки Klipper нужно найти ваш принтер. Определите, как он подключился к ноутбуку:
+Команда:
+	ls /dev/serial/by-id/*
+Вы увидите что то вроде /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 скопируйте эту строку она понадобится в конфиге
+Теперь создадим сам конфиг:
+1.	Откройте веб-интерфейс Fluidd доступен по адресу http://ip-ноутбука
+2.	Перейдите в раздел “Machine”
+3.	Там будет пустой файл printer.cfg. Вам нужно заполнить его правильными параметрами.
+4.	Лучший способ: Не пишите всё с нуля. Возьмите готовый шаблон из официального репозитория Klipper:
+ls ~/klipper/config/ | grep -i ender
+	        Среди вывода найдите файл:
+Generic-creality-ender3-pro.cfg. Скопируй шаблон.
+
+5.	Адаптируй шаблон:
+•	Вставьте скопированный текст в printer.cfg в веб-интерфейсе
+•	Найдите секцию [mcu] и замени значения serial: на ту самую строку из /dev/serial/by-id/…, которую вы сохраняли.
+•	Посмотри остальные настройки (шаги моторов, направление оси, стол и тд), они обычно подходят для стокового принтера.
+6.	Нажмите “Save & Restart”. Если всё сделано верно, ошибки исчезнут, и вы сможите управлять принтером через браузер.
+Этап 5: Первый запуск и калибровка.
+1.	Прогрейте сопло до 200 градусов, а стол до 60 градусов
+2.	Выполните PID команды калибровки для стола и экструдера(кнопки есть в интерфейсе)
+3.	Настройка z-offset (бумажкой)
+4.	Создайте карту не ровностей 
+
+
+	
+
+
